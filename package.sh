@@ -86,18 +86,42 @@ if [ "$push_choice" = "1" ]; then
         exit 1
     }
     
-    # 推送到GitHub
-    git push origin master || {
+    # 创建并推送版本标签
+    git tag -a "v$NEW_VERSION" -m "Release version $NEW_VERSION" || {
+        echo "错误：创建git tag失败"
+        exit 1
+    }
+    
+    # 推送到GitHub（包含代码和标签）
+    git push origin master --tags || {
         echo "错误：推送到GitHub失败"
         exit 1
     }
     
     echo "✅ 推送到GitHub成功！"
+    echo "✅ 版本标签 v$NEW_VERSION 已创建并推送！"
 else
     echo "跳过推送到GitHub步骤。"
 fi
 
-echo "\n打包完成。生成的文件可用于："
-echo "1. HACS手动安装"
-echo "2. GitHub Release发布"
-echo "3. 本地测试部署"
+# 显示包信息
+echo "========================================="
+echo "打包完成！"
+echo "========================================="
+echo "包名: ${general_zip}"
+echo "版本: ${NEW_VERSION}"
+echo "文件列表:"
+unzip -l "${general_zip}"
+echo ""
+echo "========================================="
+echo ""
+echo "📌 下一步："
+echo "1. 将 ${general_zip} 上传到GitHub Release"
+echo "2. 或使用以下命令推送到GitHub："
+echo ""
+echo "   git add ."
+echo "   git commit -m 'Release v${NEW_VERSION}'"
+echo "   git tag v${NEW_VERSION}"
+echo "   git push origin master"
+echo "   git push origin v${NEW_VERSION}"
+echo ""
