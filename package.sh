@@ -34,7 +34,6 @@ sed -i '' "s/\"version\": \"$CURRENT_VERSION\"/\"version\": \"$NEW_VERSION\"/g" 
 echo "✅ 版本号已更新到 $NEW_VERSION"
 
 # 定义ZIP文件路径（基于项目根目录）
-RELEASE_ZIP="china_southern_power_grid_stat-v$NEW_VERSION.zip"
 general_zip="china_southern_power_grid_stat.zip"
 
 # 切换到组件代码目录
@@ -43,26 +42,21 @@ cd "custom_components/china_southern_power_grid_stat" || {
     exit 1
 }
 
-# 生成release版本的ZIP文件
-zip -r "../../$RELEASE_ZIP" * || {
+# 生成通用版本的ZIP文件（无版本号后缀）
+zip -r "../../$general_zip" * || {
     echo "错误：生成ZIP文件失败"
     exit 1
-}
-
-# 同时生成通用版本（无版本号后缀）
-cp "../../$RELEASE_ZIP" "../../$general_zip" || {
-    echo "警告：复制通用版本ZIP文件失败"
 }
 
 # 回到项目根目录
 cd ../..
 
 # 验证生成结果
-if [ -f "$RELEASE_ZIP" ]; then
+if [ -f "$general_zip" ]; then
     echo "✅ 打包成功！"
-    echo "Release版本：$(pwd)/$RELEASE_ZIP"
-    echo "通用版本：$(pwd)/$general_zip"
-    echo "文件大小：$(du -h "$RELEASE_ZIP" | cut -f1)"
+    echo "生成的文件：$(pwd)/$general_zip"
+    echo "文件大小：$(du -h "$general_zip" | cut -f1)"
+    echo "版本号：$NEW_VERSION"
 else
     echo "❌ 打包失败：未生成ZIP文件"
     exit 1
